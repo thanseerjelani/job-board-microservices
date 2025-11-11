@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/api/auth/register",     // Registration
                                 "/api/auth/login",        // Login
                                 "/api/auth/health",       // Health check
+                                "/api/auth/preferences/subscribed-users/**", // subscribed users
                                 "/h2-console/**",         // H2 database console
                                 "/actuator/health",       // Actuator health
                                 "/actuator/info"          // Actuator info

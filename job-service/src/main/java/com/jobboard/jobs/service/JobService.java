@@ -64,7 +64,7 @@ public class JobService {
                 .skillsRequired(request.getSkillsRequired())
                 .postedByUserId(currentUser.getId())
                 .postedByUsername(currentUser.getUsername())
-                .postedByEmail(currentUser.getEmail())
+                .postedByEmail(currentUser.getEmail())  // ← Fixed: actual email
                 .applicationDeadline(request.getApplicationDeadline())
                 .isActive(true)
                 .build();
@@ -72,20 +72,43 @@ public class JobService {
         Job savedJob = jobRepository.save(job);
         log.info("Job created successfully with ID: {}", savedJob.getId());
 
-        // Publish job posted event
-        JobPostedEvent event = JobPostedEvent.builder()
-                .jobId(savedJob.getId())
-                .title(savedJob.getTitle())
-                .companyName(savedJob.getCompanyName())
-                .location(savedJob.getLocation())
-                .category(savedJob.getCategory().toString())
-                .salaryMin(savedJob.getSalaryMin())
-                .salaryMax(savedJob.getSalaryMax())
-                .postedByUsername(currentUser.getUsername())
-                .postedByEmail(currentUser.getEmail())
-                .build();
+        // ============================================
+        // PUBLISH JOB POSTED EVENT - UPDATED SECTION
+        // ============================================
+        try {
+            // Fetch users subscribed to this job's category
+            String category = savedJob.getCategory().toString();
+            log.info("Fetching users subscribed to category: {}", category);
 
-        messagePublisher.publishJobPostedEvent(event);
+            List<UserDTO> subscribedUsers = authServiceClient.getUsersSubscribedToCategory(category);
+
+            List<String> subscribedEmails = subscribedUsers.stream()
+                    .map(UserDTO::getEmail)
+                    .toList();
+
+            log.info("Found {} subscribed users for category {}", subscribedEmails.size(), category);
+
+            JobPostedEvent event = JobPostedEvent.builder()
+                    .jobId(savedJob.getId())
+                    .title(savedJob.getTitle())
+                    .companyName(savedJob.getCompanyName())
+                    .location(savedJob.getLocation())
+                    .category(category)
+                    .salaryMin(savedJob.getSalaryMin())
+                    .salaryMax(savedJob.getSalaryMax())
+                    .postedByUsername(currentUser.getUsername())
+                    .postedByEmail(currentUser.getEmail())
+                    .jobSeekerEmails(subscribedEmails)  // Only subscribed users!
+                    .build();
+
+            messagePublisher.publishJobPostedEvent(event);
+
+            log.info("Job posted event published successfully");
+
+        } catch (Exception e) {
+            log.error("Failed to publish job posted event: {}", e.getMessage());
+            // Don't fail job creation if notification fails
+        }
 
         return mapToJobResponse(savedJob);
     }

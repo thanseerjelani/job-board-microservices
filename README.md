@@ -1,67 +1,115 @@
 # 🚀 Job Board Microservices Platform
 
-A full-featured job board application built with Spring Boot microservices architecture, demonstrating modern cloud-native development practices.
+[![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen?style=flat-square&logo=spring-boot)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.1-blue?style=flat-square)](https://spring.io/projects/spring-cloud)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-FF6600?style=flat-square&logo=rabbitmq)](https://www.rabbitmq.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.5-brightgreen)
-![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.1-blue)
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+> A production-grade microservices platform demonstrating modern backend architecture with Spring Boot, Spring Cloud, JWT authentication, RabbitMQ messaging, and user subscription system.
+
+[🔗 Live Demo](#) | [📖 API Docs](./docs/API_DOCUMENTATION.md) | [🏗️ Architecture](./docs/ARCHITECTURE.md) | [🚀 Deployment](./docs/DEPLOYMENT.md)
+
+---
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Features](#features)
 - [Architecture](#architecture)
 - [Technologies](#technologies)
-- [Features](#features)
-- [Microservices](#microservices)
-- [Getting Started](#getting-started)
+- [Quick Start](#quick-start)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
 - [Deployment](#deployment)
-- [Screenshots](#screenshots)
-- [Future Enhancements](#future-enhancements)
+- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
+- [Contact](#contact)
+
+---
 
 ## 🎯 Overview
 
-This project is a production-grade job board platform that demonstrates the implementation of microservices architecture using Spring Cloud ecosystem. The platform allows employers to post jobs and manage applications, while job seekers can search for jobs and apply to positions.
+This project is a **full-featured job board backend** built with microservices architecture, demonstrating production-ready patterns and modern cloud-native development practices. The platform enables employers to post and manage jobs while allowing job seekers to search, filter, and apply for positions with real-time notifications.
 
 ### Key Highlights
 
-- ✅ **Microservices Architecture** - Independently deployable services
-- ✅ **Service Discovery** - Dynamic service registration with Eureka
+- ✅ **4 Microservices** - Independently deployable and scalable
+- ✅ **Service Discovery** - Eureka for dynamic service registration
 - ✅ **API Gateway** - Centralized routing and load balancing
-- ✅ **Authentication & Authorization** - JWT-based stateless authentication
-- ✅ **Asynchronous Messaging** - Event-driven communication with RabbitMQ
-- ✅ **Email Notifications** - Automated notifications for key events
-- ✅ **RESTful APIs** - Well-designed REST endpoints
-- ✅ **Database Per Service** - Separate databases for data isolation
+- ✅ **JWT Authentication** - Stateless, secure authentication
+- ✅ **Role-Based Authorization** - USER, EMPLOYER, ADMIN roles
+- ✅ **Event-Driven Architecture** - Asynchronous messaging with RabbitMQ
+- ✅ **User Subscriptions** - Category-based job notifications
+- ✅ **Docker Support** - One-command deployment
+- ✅ **RESTful APIs** - Complete CRUD operations with pagination
+
+---
+
+## ✨ Features
+
+### For Employers 💼
+
+- Register as an employer with secure authentication
+- Post job listings with detailed requirements
+- Manage job postings (update, delete, view applications)
+- Review applications from job seekers
+- Update application status (shortlist, interview, accept, reject)
+- Receive email notifications for new applications
+
+### For Job Seekers 🔍
+
+- Register and create user profile
+- Browse all available jobs with pagination
+- Search jobs by keywords (title, company, location)
+- Filter by category, job type, salary range, experience level
+- Subscribe to job categories of interest
+- Apply for jobs with cover letter
+- Track application status in real-time
+- Receive targeted email notifications
+- Withdraw applications if needed
+
+### System Features 🛠️
+
+- JWT-based stateless authentication
+- Role-based access control (RBAC)
+- Asynchronous email notifications
+- Service discovery and health monitoring
+- Centralized API gateway
+- Event-driven communication
+- Comprehensive error handling
+- Input validation
+- Database per service pattern
+
+---
 
 ## 🏗️ Architecture
 
-### High-Level Architecture
+### High-Level System Design
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      Client Layer                       │
-│           (Web Browser / Mobile App / Postman)          │
+│                    Client Layer                         │
+│            (Web/Mobile/Postman/API Consumers)           │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ↓
 ┌─────────────────────────────────────────────────────────┐
-│                   API Gateway (8080)                    │
-│              Single Entry Point / Load Balancer         │
+│               API Gateway (Port 8080)                   │
+│         Single Entry Point • Load Balancing             │
+│              Request Routing • Security                 │
 └───────┬──────────────────────┬──────────────────────────┘
         │                      │
         ↓                      ↓
 ┌──────────────┐      ┌──────────────────┐
 │ Auth Service │      │   Job Service    │
-│    (8081)    │◄────►│     (8082)       │
+│   (8081)     │◄────►│     (8082)       │
 │              │      │                  │
-│ - Register   │      │ - Create Jobs    │
-│ - Login      │      │ - Apply for Jobs │
-│ - JWT Auth   │      │ - Search         │
+│ - Register   │      │ - Job CRUD       │
+│ - Login      │      │ - Applications   │
+│ - JWT Tokens │      │ - Search/Filter  │
+│ - User Prefs │      │ - Subscriptions  │
 │              │      │                  │
 │ H2: authdb   │      │ H2: jobdb        │
 └──────────────┘      └────────┬─────────┘
@@ -72,6 +120,12 @@ This project is a production-grade job board platform that demonstrates the impl
                       │    RabbitMQ     │
                       │     (5672)      │
                       │  Message Broker │
+                      │                 │
+                      │ ┌─────────────┐ │
+                      │ │ Job Posted  │ │
+                      │ │ Application │ │
+                      │ │ Status Chg  │ │
+                      │ └─────────────┘ │
                       └────────┬────────┘
                                │
                                │ Consume Events
@@ -82,190 +136,167 @@ This project is a production-grade job board platform that demonstrates the impl
                       │                     │
                       │ - Email Alerts      │
                       │ - Event Processing  │
+                      │ - SMTP Integration  │
                       └─────────────────────┘
 
-All Services Register with:
+All Services Register & Discover via:
 ┌─────────────────────────────────────┐
 │       Eureka Server (8761)          │
-│       Service Discovery             │
+│       Service Registry              │
 └─────────────────────────────────────┘
 ```
 
 ### Communication Patterns
 
-1. **Synchronous Communication**
-    - Client → API Gateway → Services (REST/HTTP)
-    - Job Service → Auth Service (Feign Client)
+**Synchronous Communication:**
+- Client → API Gateway → Services (REST/HTTP)
+- Job Service → Auth Service (Feign Client)
 
-2. **Asynchronous Communication**
-    - Job Service → RabbitMQ → Notification Service (AMQP)
+**Asynchronous Communication:**
+- Job Service → RabbitMQ → Notification Service (AMQP)
+- Event-driven notifications for non-blocking operations
+
+---
 
 ## 🛠️ Technologies
 
 ### Core Framework
+- **Java 17** - Programming language
 - **Spring Boot 3.2.5** - Application framework
 - **Spring Cloud 2023.0.1** - Microservices ecosystem
-- **Java 17** - Programming language
+- **Maven 3.8+** - Dependency management
 
 ### Microservices Components
-- **Spring Cloud Netflix Eureka** - Service discovery
-- **Spring Cloud Gateway** - API gateway and routing
+- **Spring Cloud Netflix Eureka** - Service discovery and registration
+- **Spring Cloud Gateway** - API gateway and intelligent routing
 - **Spring Cloud OpenFeign** - Declarative REST client
 
 ### Security
-- **Spring Security 6** - Authentication and authorization
-- **JWT (JSON Web Tokens)** - Stateless authentication
-- **BCrypt** - Password hashing
+- **Spring Security 6** - Authentication and authorization framework
+- **JWT (JSON Web Tokens)** - Stateless authentication mechanism
+- **BCrypt** - Password hashing algorithm
 
-### Messaging
-- **RabbitMQ** - Message broker
-- **Spring AMQP** - RabbitMQ integration
+### Messaging & Events
+- **RabbitMQ 3.13** - Message broker for async communication
+- **Spring AMQP** - RabbitMQ integration and message handling
 
-### Database
-- **Spring Data JPA** - Data access layer
+### Database & Persistence
+- **Spring Data JPA** - Data access abstraction
 - **Hibernate** - ORM framework
 - **H2 Database** - In-memory database (Development)
+- **Database-per-Service** - Each service owns its data
 
-### Other
+### DevOps & Deployment
+- **Docker** - Containerization platform
+- **Docker Compose** - Multi-container orchestration
+- **Multi-stage Docker Builds** - Optimized container images
+
+### Development Tools
 - **Lombok** - Reduce boilerplate code
-- **Bean Validation** - Input validation
-- **Spring Boot Actuator** - Health monitoring
+- **Bean Validation** - Request validation
+- **Spring Boot Actuator** - Production-ready features
+- **SLF4J + Logback** - Logging framework
 
-## ✨ Features
+---
 
-### For Employers
-- ✅ Register as an employer
-- ✅ Post job listings with detailed information
-- ✅ Manage job postings (update, delete)
-- ✅ View all applications for their jobs
-- ✅ Update application status (shortlist, interview, accept, reject)
-- ✅ Receive email notifications for new applications
-
-### For Job Seekers
-- ✅ Register as a user/job seeker
-- ✅ Browse all available jobs with pagination
-- ✅ Search jobs by keywords (title, company, location)
-- ✅ Filter jobs by category, job type, salary range
-- ✅ Apply for jobs with cover letter
-- ✅ Track application status
-- ✅ Receive email notifications for application updates
-- ✅ Withdraw applications
-
-### System Features
-- ✅ JWT-based authentication (stateless)
-- ✅ Role-based access control (USER, EMPLOYER, ADMIN)
-- ✅ Asynchronous email notifications
-- ✅ Service discovery and registration
-- ✅ Centralized API gateway
-- ✅ Health monitoring endpoints
-- ✅ Comprehensive error handling
-
-## 🔧 Microservices
-
-### 1. Eureka Server (Service Discovery)
-- **Port:** 8761
-- **Purpose:** Service registry and discovery
-- **Dashboard:** http://localhost:8761
-
-### 2. API Gateway
-- **Port:** 8080
-- **Purpose:** Single entry point, request routing
-- **Routes:**
-    - `/api/auth/**` → Auth Service
-    - `/api/jobs/**` → Job Service
-
-### 3. Auth Service
-- **Port:** 8081
-- **Database:** H2 (authdb)
-- **Endpoints:**
-    - `POST /api/auth/register` - User registration
-    - `POST /api/auth/login` - User login
-    - `GET /api/auth/me` - Get current user
-
-### 4. Job Service
-- **Port:** 8082
-- **Database:** H2 (jobdb)
-- **Endpoints:**
-    - Job Management (CRUD)
-    - Job Search & Filtering
-    - Application Management
-
-### 5. Notification Service
-- **Port:** 8083
-- **Purpose:** Process events and send notifications
-- **Events:**
-    - Job posted
-    - Application submitted
-    - Application status changed
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Java 17 or higher
-- Maven 3.6+
-- Docker (for RabbitMQ)
-- Git
-- Postman (optional, for testing)
+Ensure you have the following installed:
 
-### Installation
+- **Java 17+** - [Download](https://adoptium.net/)
+- **Maven 3.8+** - [Download](https://maven.apache.org/download.cgi)
+- **Docker & Docker Compose** - [Download](https://www.docker.com/products/docker-desktop)
+- **Git** - [Download](https://git-scm.com/downloads)
+- **Postman** (Optional) - [Download](https://www.postman.com/downloads/)
 
-1. **Clone the repository**
+### Option 1: Docker Compose (Recommended) 🐳
+
+**One-command startup:**
 ```bash
-   git clone https://github.com/yourusername/job-board-microservices.git
-   cd job-board-microservices
+# Clone the repository
+git clone https://github.com/yourusername/job-board-microservices.git
+cd job-board-microservices
+
+# Start all services
+docker-compose up -d
+
+# Wait ~60 seconds for services to be healthy
+
+# Check status
+docker-compose ps
 ```
 
-2. **Start RabbitMQ**
+**Access Points:**
+- **Eureka Dashboard:** http://localhost:8761
+- **API Gateway:** http://localhost:8080
+- **RabbitMQ Management:** http://localhost:15672 (guest/guest)
+- **Auth Service:** http://localhost:8081
+- **Job Service:** http://localhost:8082
+- **Notification Service:** http://localhost:8083
+
+**Stop services:**
 ```bash
-   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+docker-compose down
 ```
 
-3. **Build all services**
+---
+
+### Option 2: Local Development Setup
+
+**1. Clone and Build:**
 ```bash
-   mvn clean install -DskipTests
+git clone https://github.com/yourusername/job-board-microservices.git
+cd job-board-microservices
+
+# Build all services
+mvn clean install -DskipTests
 ```
 
-4. **Start services in order**
-
-   **Terminal 1 - Eureka Server:**
+**2. Start RabbitMQ:**
 ```bash
-   cd eureka-server
-   mvn spring-boot:run
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
+
+**3. Start Services (In Order):**
+
+**Terminal 1 - Eureka Server:**
+```bash
+cd eureka-server
+mvn spring-boot:run
+```
+Wait for: `Started EurekaServerApplication`
 
 **Terminal 2 - API Gateway:**
 ```bash
-   cd api-gateway
-   mvn spring-boot:run
+cd api-gateway
+mvn spring-boot:run
 ```
 
 **Terminal 3 - Auth Service:**
 ```bash
-   cd auth-service
-   mvn spring-boot:run
+cd auth-service
+mvn spring-boot:run
 ```
 
 **Terminal 4 - Job Service:**
 ```bash
-   cd job-service
-   mvn spring-boot:run
+cd job-service
+mvn spring-boot:run
 ```
 
 **Terminal 5 - Notification Service:**
 ```bash
-   cd notification-service
-   mvn spring-boot:run
+cd notification-service
+mvn spring-boot:run
 ```
 
-5. **Verify all services are up**
-    - Eureka Dashboard: http://localhost:8761
-    - All 4 services should be registered
+**4. Verify:**
+- Open http://localhost:8761
+- All 4 services should be registered
 
-### Quick Start with Docker Compose (Coming Soon)
-```bash
-docker-compose up -d
-```
+---
 
 ## 📖 API Documentation
 
@@ -274,18 +305,9 @@ docker-compose up -d
 http://localhost:8080
 ```
 
-### Authentication
+### Authentication Endpoints
 
-All protected endpoints require a JWT token in the Authorization header:
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-### Endpoints Overview
-
-#### Auth Service Endpoints
-
-**Register User**
+#### Register User
 ```http
 POST /api/auth/register
 Content-Type: application/json
@@ -299,7 +321,23 @@ Content-Type: application/json
 }
 ```
 
-**Login**
+**Roles:** `USER` (job seeker), `EMPLOYER` (company), `ADMIN` (platform admin)
+
+**Response (201 Created):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "type": "Bearer",
+  "id": 1,
+  "username": "john_doe",
+  "email": "john@example.com",
+  "fullName": "John Doe",
+  "role": "USER",
+  "message": "User registered successfully"
+}
+```
+
+#### Login
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -310,22 +348,20 @@ Content-Type: application/json
 }
 ```
 
-Response:
+**Response (200 OK):**
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiJ9...",
   "type": "Bearer",
   "id": 1,
   "username": "john_doe",
-  "email": "john@example.com",
-  "fullName": "John Doe",
   "role": "USER"
 }
 ```
 
-#### Job Service Endpoints
+### Job Endpoints
 
-**Create Job (EMPLOYER only)**
+#### Create Job (EMPLOYER only)
 ```http
 POST /api/jobs
 Authorization: Bearer <token>
@@ -341,24 +377,30 @@ Content-Type: application/json
   "experienceLevel": "SENIOR",
   "salaryMin": 1500000,
   "salaryMax": 2500000,
-  "skillsRequired": "Java, Spring Boot, Microservices"
+  "skillsRequired": "Java, Spring Boot, Microservices",
+  "applicationDeadline": "2025-12-31T23:59:59"
 }
 ```
 
-**Get All Jobs (Public)**
+#### Get All Jobs (Public)
 ```http
 GET /api/jobs?page=0&size=10&sortBy=createdAt&sortDir=DESC
 ```
 
-**Search Jobs (Public)**
+#### Search Jobs (Public)
 ```http
 GET /api/jobs/search?keyword=java&page=0&size=10
 ```
 
-**Apply for Job (USER only)**
+#### Filter by Category
+```http
+GET /api/jobs/category/SOFTWARE_DEVELOPMENT?page=0&size=10
+```
+
+#### Apply for Job (USER only)
 ```http
 POST /api/jobs/1/apply
-Authorization: Bearer <user-token>
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -367,133 +409,220 @@ Content-Type: application/json
 }
 ```
 
-**Update Application Status (EMPLOYER only)**
+#### Get My Applications (USER)
 ```http
-PATCH /api/jobs/applications/1/status?status=SHORTLISTED
-Authorization: Bearer <employer-token>
+GET /api/jobs/applications/my-applications
+Authorization: Bearer <token>
 ```
 
-[Complete API documentation](./docs/API_DOCUMENTATION.md)
+#### Update Application Status (EMPLOYER)
+```http
+PATCH /api/jobs/applications/1/status?status=SHORTLISTED
+Authorization: Bearer <token>
+```
+
+**Status Values:** `PENDING`, `REVIEWED`, `SHORTLISTED`, `INTERVIEWED`, `ACCEPTED`, `REJECTED`, `WITHDRAWN`
+
+### User Preference Endpoints
+
+#### Subscribe to Job Categories (USER)
+```http
+PUT /api/auth/preferences
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "subscribedCategories": ["SOFTWARE_DEVELOPMENT", "DATA_SCIENCE"],
+  "emailNotificationsEnabled": true
+}
+```
+
+#### Get My Preferences
+```http
+GET /api/auth/preferences
+Authorization: Bearer <token>
+```
+
+**📚 Complete API Documentation:** [API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md)
+
+---
 
 ## 🧪 Testing
 
 ### Manual Testing with Postman
 
-1. Import the Postman collection: `postman/Job-Board-APIs.postman_collection.json`
-2. Set up environment variables
-3. Run the collection
+1. **Import Collection:**
+    - Import `postman/Job-Board-APIs.postman_collection.json`
 
-### Testing Workflow
+2. **Set Environment Variables:**
+    - `baseUrl`: `http://localhost:8080`
+    - `token`: (auto-updated after login)
 
-1. Register as EMPLOYER
-2. Create a job
-3. Register as USER
-4. Apply for the job
-5. Switch to EMPLOYER
-6. View applications
-7. Update application status
-8. Check notification service logs
+3. **Test Flow:**
+    - Register as EMPLOYER
+    - Create a job
+    - Register as USER
+    - Subscribe to categories
+    - Apply for the job
+    - Check notification service logs
 
-## 🐳 Deployment
+### Testing with cURL
 
-### Using Docker Compose
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  eureka-server:
-    build: ./eureka-server
-    ports:
-      - "8761:8761"
-
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - "8080:8080"
-    depends_on:
-      - eureka-server
-
-  auth-service:
-    build: ./auth-service
-    ports:
-      - "8081:8081"
-    depends_on:
-      - eureka-server
-
-  job-service:
-    build: ./job-service
-    ports:
-      - "8082:8082"
-    depends_on:
-      - eureka-server
-      - rabbitmq
-
-  notification-service:
-    build: ./notification-service
-    ports:
-      - "8083:8083"
-    depends_on:
-      - rabbitmq
-      - eureka-server
+**Register User:**
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "test_user",
+    "email": "test@example.com",
+    "password": "password123",
+    "fullName": "Test User",
+    "role": "USER"
+  }'
 ```
 
-### Deploy to Cloud
+**Get All Jobs:**
+```bash
+curl http://localhost:8080/api/jobs?page=0&size=10
+```
 
-[Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
+---
 
-## 📸 Screenshots
+## 🚀 Deployment
 
-### Eureka Dashboard
-![Eureka Dashboard](./screenshots/eureka-dashboard.png)
+### Docker Deployment
+```bash
+# Build and start
+docker-compose up --build -d
 
-### RabbitMQ Management
-![RabbitMQ](./screenshots/rabbitmq-dashboard.png)
+# View logs
+docker-compose logs -f
 
-### Postman Testing
-![Postman](./screenshots/postman-testing.png)
+# Stop services
+docker-compose down
+```
+
+### Production Considerations
+
+- Use PostgreSQL/MySQL instead of H2
+- Configure real SMTP server for emails
+- Use environment variables for sensitive data
+- Enable HTTPS/TLS
+- Implement API rate limiting
+- Add monitoring (Prometheus, Grafana)
+- Configure distributed tracing (Zipkin, Jaeger)
+
+**📚 Detailed Deployment Guide:** [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+
+---
+
+## 📁 Project Structure
+```
+job-board-microservices/
+├── eureka-server/              # Service Discovery
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── api-gateway/                # API Gateway
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── auth-service/               # Authentication & Authorization
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── job-service/                # Job & Application Management
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── notification-service/       # Email Notifications
+│   ├── src/
+│   ├── Dockerfile
+│   └── pom.xml
+├── docs/                       # Documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── ARCHITECTURE.md
+│   └── DEPLOYMENT.md
+├── postman/                    # API Collection
+│   └── Job-Board-APIs.postman_collection.json
+├── docker-compose.yml          # Docker orchestration
+├── pom.xml                     # Parent POM
+├── README.md                   # This file
+└── LICENSE                     # MIT License
+```
+
+---
 
 ## 🔮 Future Enhancements
 
-- [ ] Add Redis for caching
-- [ ] Implement Kafka for high-throughput messaging
-- [ ] Add Elasticsearch for advanced job search
-- [ ] Implement API rate limiting
-- [ ] Add distributed tracing (Zipkin/Jaeger)
-- [ ] Implement circuit breaker (Resilience4j)
-- [ ] Add comprehensive unit and integration tests
-- [ ] Implement resume upload feature (AWS S3)
-- [ ] Add real-time notifications (WebSocket)
+- [ ] Implement Redis for caching
+- [ ] Add Kafka for high-throughput messaging
+- [ ] Integrate Elasticsearch for advanced search
+- [ ] Add API rate limiting with Redis
+- [ ] Implement distributed tracing (Zipkin/Jaeger)
+- [ ] Add circuit breaker pattern (Resilience4j)
 - [ ] Create admin dashboard
-- [ ] Add metrics and monitoring (Prometheus/Grafana)
+- [ ] Add resume upload feature (AWS S3)
+- [ ] Implement real-time notifications (WebSocket)
+- [ ] Add comprehensive test coverage
+- [ ] Setup CI/CD pipeline (GitHub Actions)
+- [ ] Implement monitoring (Prometheus/Grafana)
+
+---
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
 ## 👨‍💻 Author
 
-**Your Name**
-- LinkedIn: [Thanseer Jelani](https://www.linkedin.com/in/thanseer-jelani-520768255/)
-- GitHub: [@thanseerjelani](https://github.com/thanseerjelani)
-- Email: thanseerjelani@gmail.com
+**Thanseer Jelani**
+
+- 💼 LinkedIn: [Thanseer Jelani](https://www.linkedin.com/in/thanseer-jelani-520768255/)
+- 🐱 GitHub: [@thanseerjelani](https://github.com/thanseerjelani)
+- 📧 Email: thanseerjelani@gmail.com
+- 🌐 Portfolio: [thanseerjelani.com](https://thanseerjelani-portfolio.netlify.app/)
+
+---
 
 ## 🙏 Acknowledgments
 
-- Spring Boot and Spring Cloud teams
-- RabbitMQ community
+- Spring Boot and Spring Cloud teams for excellent documentation
+- RabbitMQ community for robust messaging platform
+- Docker for making deployment seamless
 - All open-source contributors
 
 ---
 
-⭐ If you found this project helpful, please give it a star!
+## 📊 Project Statistics
+
+- **Lines of Code:** ~5,000+
+- **Microservices:** 5 (Eureka, Gateway, Auth, Job, Notification)
+- **REST Endpoints:** 15+
+- **Docker Containers:** 6
+- **Message Queues:** 3
+- **Technologies Used:** 20+
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project helpful, please give it a star!
+
+**Built with ❤️ using Spring Boot & Microservices**
+
+</div>
